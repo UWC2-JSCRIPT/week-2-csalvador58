@@ -1,32 +1,53 @@
-const { Router } = require("express");
+const { Router } = require('express');
 
 const CalendarDAO = require('../daos/calendars');
 
 const router = Router();
 
-router.get("/", async (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
     const calendars = await CalendarDAO.getAll();
     res.json(calendars);
-  } catch(e) {
+  } catch (e) {
     next(e);
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get('/:id', async (req, res, next) => {
   try {
+    // console.log(`ROUTES = req.params.id: ${req.params.id}`);
     const calendar = await CalendarDAO.getById(req.params.id);
     if (calendar) {
+      // console.log(`ROUTES - calendar found: `)
+      // console.log(calendar)
       res.json(calendar);
     } else {
       res.sendStatus(404);
     }
-  } catch(e) {
+  } catch (e) {
     next(e);
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.post('/', async (req, res, next) => {
+  // console.log('ROUTE POST - req.body');
+  const calendar = req.body;
+  // console.log('calendar');
+  // console.log(calendar);
+  // console.log('calendar.name');
+  // console.log(calendar.name);
+  if (calendar.name) {
+    const savedCalendar = await CalendarDAO.create(calendar.name)
+    // console.log('Calendar item created');
+    // console.log(savedCalendar);
+    res.sendStatus(200);
+  } else {
+    // console.log('Calendar NOT created, missing name');
+    res.sendStatus(400);
+  }
+});
+
+router.delete('/:id', async (req, res, next) => {
   try {
     const calendar = await CalendarDAO.removeById(req.params.id);
     if (calendar) {
@@ -34,7 +55,7 @@ router.delete("/:id", async (req, res, next) => {
     } else {
       res.sendStatus(404);
     }
-  } catch(e) {
+  } catch (e) {
     next(e);
   }
 });
