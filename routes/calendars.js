@@ -37,12 +37,35 @@ router.post('/', async (req, res, next) => {
   // console.log('calendar.name');
   // console.log(calendar.name);
   if (calendar.name) {
-    const savedCalendar = await CalendarDAO.create(calendar.name)
+    const savedCalendar = await CalendarDAO.create(calendar.name);
     // console.log('Calendar item created');
     // console.log(savedCalendar);
     res.sendStatus(200);
   } else {
     // console.log('Calendar NOT created, missing name');
+    res.sendStatus(400);
+  }
+});
+
+router.put('/:id', async (req, res, next) => {
+  // console.log('req.params.id');
+  // console.log(req.params.id);
+  // console.log('req.body');
+  // console.log(req.body);
+
+  const calendar = req.body;
+
+  if (calendar.name) {
+    const tx = await CalendarDAO.updateById(req.params.id, calendar);
+    // console.log('tx');
+    // console.log(tx);
+    if (tx) {
+      res.json(tx);
+      // res.sendStatus(200);
+    } else {
+      res.sendStatus(404);
+    }
+  } else {
     res.sendStatus(400);
   }
 });
