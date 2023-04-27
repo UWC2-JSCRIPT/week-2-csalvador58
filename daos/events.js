@@ -24,6 +24,27 @@ module.exports.getEventById = async (id) => {
   }
 };
 
+module.exports.updateById = async (id, newData) => {
+    //  console.log('UPDATE BY ID')
+//   console.log(id)
+
+//   console.log("newData")
+//   console.log(newData)
+
+  try {
+    const event = await Events.findOneAndUpdate({ _id: id }, newData, {
+      new: true,
+    }).lean();
+
+    // console.log(`Updated event: `)
+    // console.log(event)
+
+    return event;
+  } catch (e) {
+    return null;
+  }
+}
+
 module.exports.removeById = async (id) => {
     // console.log('DAO - removing event...')
     // console.log(id)

@@ -72,17 +72,49 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.delete('/:eventId', async (req, res, next) => {
-//   console.log('Event Id and Calendar ID check');
-//   console.log(`Calendar ID: ${req.params.calendarId}`);
-//   console.log(`Event ID: ${req.params.eventId}`);
+router.put('/:eventId', async (req, res, next) => {
+  const eventUpdate = req.body;
+//   console.log('Update event info:')
+//   console.log(eventUpdate)
+//   console.log('req.params.eventId')
+//   console.log(req.params.eventId)
 
   try {
     const event = await EventDAO.getEventById(req.params.eventId);
     // console.log("EVENT FOUND: ")
     // console.log(event)
     if (event && event.calendarId == req.params.calendarId) {
-        // console.log('Remove Event: ')
+    //   console.log('Updating Event... ')
+
+      const tx = await EventDAO.updateById(req.params.eventId, eventUpdate);
+    //   console.log('tx');
+    //   console.log(tx);
+      if (tx) {
+        res.json(tx);
+        // res.sendStatus(200);
+      } else {
+        res.sendStatus(404);
+      }
+    } else {
+      //   console.log("calendar ID DOES NOT match or not found")
+      res.sendStatus(404);
+    }
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.delete('/:eventId', async (req, res, next) => {
+  //   console.log('Event Id and Calendar ID check');
+  //   console.log(`Calendar ID: ${req.params.calendarId}`);
+  //   console.log(`Event ID: ${req.params.eventId}`);
+
+  try {
+    const event = await EventDAO.getEventById(req.params.eventId);
+    // console.log("EVENT FOUND: ")
+    // console.log(event)
+    if (event && event.calendarId == req.params.calendarId) {
+      // console.log('Remove Event: ')
       const event = await EventDAO.removeById(req.params.eventId);
       if (event) {
         // delete event if found
@@ -93,32 +125,12 @@ router.delete('/:eventId', async (req, res, next) => {
         res.sendStatus(404);
       }
     } else {
-    //   console.log("calendar ID DOES NOT match or not found")
+      //   console.log("calendar ID DOES NOT match or not found")
       res.sendStatus(404);
     }
   } catch (e) {
     next(e);
   }
-
-  //        console.log('EVENTS ROUTER - req.params: ');
-  //     console.log(req.params.calendarId);
-  //   try {
-  //      // Check if calendar Id exists
-  //      const calendarExists = await CalendarDAO.getById(req.params.calendarId);
-  //      if (!calendarExists) {
-  //        return res.sendStatus(404);
-  //      }
-
-  //      // If calendar Id exists, query to delete event
-  //     const event = await EventDAO.removeById(req.params.eventId);
-  //     if (event) {
-  //       res.sendStatus(200);
-  //     } else {
-  //       res.sendStatus(404);
-  //     }
-  //   } catch (e) {
-  //     next(e);
-  //   }
 });
 
 module.exports = router;
