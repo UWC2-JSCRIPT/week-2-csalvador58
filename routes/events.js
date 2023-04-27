@@ -33,11 +33,20 @@ router.get('/', async (req, res, next) => {
 });
 
 router.get('/:eventId', async (req, res, next) => {
+
+    // console.log("Event Id and Calendar ID check");
+    // console.log(`Calendar ID: ${req.params.calendarId}`)
+    // console.log(`Event ID: ${req.params.eventId}`)
+
   try {
-    const event = await EventDAO.getById(req.params.eventId);
-    if (event) {
-      res.json(event);
+    const event = await EventsDAO.getEventById(req.params.eventId);
+    // console.log("EVENT FOUND: ")
+    // console.log(event)
+    if (event && event.calendarId == req.params.calendarId) {
+        // console.log("calendar ID matches")
+        res.json(event);
     } else {
+        // console.log("calendar ID DOES NOT match or not found")
       res.sendStatus(404);
     }
   } catch (e) {
